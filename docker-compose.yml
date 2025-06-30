@@ -1,0 +1,18 @@
+services:
+  db:
+    image: postgres:latest
+    ports:
+      - "5434:5432" # → change from 5434:5432 to 5434:5432 because the Postgres SQL (PgAdmin) in my local machine was also running in the same port i.e. 5432. So, the port changed from 5434 to 5433 also in database URL so that it works for docker.
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: justForTest
+
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - "8889:8080" # -> Same like postgres above. Adminer 8888 port was already being used, so it is change to 8889 from 8888
+    depends_on:
+      - db
+
+#If the port is being used, then change the port. So that it works
