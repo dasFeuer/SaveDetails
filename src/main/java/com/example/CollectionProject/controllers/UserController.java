@@ -3,7 +3,6 @@ package com.example.CollectionProject.controllers;
 import com.example.CollectionProject.domain.User;
 import com.example.CollectionProject.dtos.RegisterUserRequest;
 import com.example.CollectionProject.dtos.RegisterUserRequestDto;
-import com.example.CollectionProject.dtos.RegisterUserResponseDto;
 import com.example.CollectionProject.dtos.UserDto;
 import com.example.CollectionProject.mappers.UserMapper;
 import com.example.CollectionProject.services.UserService;
@@ -25,19 +24,11 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping("/registerUser")
-    public ResponseEntity<RegisterUserResponseDto> registerUser(
+    public ResponseEntity<UserDto> registerUser(
             @Valid @RequestBody RegisterUserRequestDto registerUserRequestDto) {
         RegisterUserRequest registerUserRequest =  userMapper.toRegister(registerUserRequestDto);
         User newUser = userService.createUser(registerUserRequest);
         UserDto user = userMapper.toUser(newUser);
-        RegisterUserResponseDto registerUserResponseDto = new RegisterUserResponseDto();
-        registerUserResponseDto.setId(user.getId());
-        registerUserResponseDto.setName(user.getName());
-        registerUserResponseDto.setEmail(user.getEmail());
-        registerUserResponseDto.setUsername(user.getUsername());
-        registerUserResponseDto.setPassword(user.getPassword());
-        registerUserResponseDto.setCreatedAt(user.getCreatedAt());
-        registerUserResponseDto.setUpdatedAt(user.getUpdatedAt());
-        return ResponseEntity.status(HttpStatus.OK).body(registerUserResponseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 }
