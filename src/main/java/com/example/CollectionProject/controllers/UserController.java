@@ -1,22 +1,24 @@
 package com.example.CollectionProject.controllers;
 
 import com.example.CollectionProject.domain.User;
-import com.example.CollectionProject.dtos.RegisterUserRequest;
-import com.example.CollectionProject.dtos.RegisterUserRequestDto;
-import com.example.CollectionProject.dtos.UserDto;
+import com.example.CollectionProject.domain.dtos.RegisterUserRequest;
+import com.example.CollectionProject.domain.dtos.RegisterUserRequestDto;
+import com.example.CollectionProject.domain.dtos.UserDto;
 import com.example.CollectionProject.mappers.UserMapper;
 import com.example.CollectionProject.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/users")
 public class UserController {
 
@@ -29,6 +31,21 @@ public class UserController {
         RegisterUserRequest registerUserRequest =  userMapper.toRegister(registerUserRequestDto);
         User newUser = userService.createUser(registerUserRequest);
         UserDto user = userMapper.toUser(newUser);
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+        if(user.getUsername() != null || user.getEmail() != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        }
+        log.error("User or Email should be filled up!");
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    @GetMapping("/all-users")
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<User> allUser = userService.getAllUser();
+        List<UserDto> collectAllUsers = allUser
+                .stream()
+                .map(userMapper::toUser)
+                .toList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(collectAllUsers);
     }
 }

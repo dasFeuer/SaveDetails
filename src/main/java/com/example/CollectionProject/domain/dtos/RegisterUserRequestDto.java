@@ -1,4 +1,4 @@
-package com.example.CollectionProject.dtos;
+package com.example.CollectionProject.domain.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

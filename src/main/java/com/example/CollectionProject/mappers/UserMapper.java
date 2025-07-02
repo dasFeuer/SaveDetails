@@ -1,9 +1,9 @@
 package com.example.CollectionProject.mappers;
 
 import com.example.CollectionProject.domain.User;
-import com.example.CollectionProject.dtos.RegisterUserRequest;
-import com.example.CollectionProject.dtos.RegisterUserRequestDto;
-import com.example.CollectionProject.dtos.UserDto;
+import com.example.CollectionProject.domain.dtos.RegisterUserRequest;
+import com.example.CollectionProject.domain.dtos.RegisterUserRequestDto;
+import com.example.CollectionProject.domain.dtos.UserDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
