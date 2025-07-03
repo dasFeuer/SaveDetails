@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,11 +30,8 @@ public class UserController {
         RegisterUserRequest registerUserRequest =  userMapper.toRegister(registerUserRequestDto);
         User newUser = userService.createUser(registerUserRequest);
         UserDto user = userMapper.toUser(newUser);
-        if(user.getUsername() != null || user.getEmail() != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(user);
-        }
-        log.error("User or Email should be filled up!");
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+
     }
 
     @GetMapping("/all-users")

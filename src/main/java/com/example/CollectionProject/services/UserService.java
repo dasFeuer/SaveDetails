@@ -10,5 +10,4 @@ public interface UserService {
 
     User createUser(RegisterUserRequest registerUserRequest);
     List<User> getAllUser();
-
 }
