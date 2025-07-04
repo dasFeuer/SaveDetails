@@ -1,7 +1,9 @@
 package com.example.CollectionProject.mappers;
 
-import com.example.CollectionProject.domain.User;
-import com.example.CollectionProject.domain.dtos.RegisterUserRequest;
+import com.example.CollectionProject.domain.UpdateUserRequest;
+import com.example.CollectionProject.domain.dtos.UpdateUserRequestDto;
+import com.example.CollectionProject.domain.entities.User;
+import com.example.CollectionProject.domain.RegisterUserRequest;
 import com.example.CollectionProject.domain.dtos.RegisterUserRequestDto;
 import com.example.CollectionProject.domain.dtos.UserDto;
 import org.mapstruct.Mapper;
@@ -11,4 +13,5 @@ import org.mapstruct.ReportingPolicy;
 public interface UserMapper {
     UserDto toUser(User user);
     RegisterUserRequest toRegister(RegisterUserRequestDto registerUserRequestDto);
+    UpdateUserRequest toUpdate(UpdateUserRequestDto updateUserRequestDto);
 }

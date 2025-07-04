@@ -1,7 +1,8 @@
 package com.example.CollectionProject.services;
 
-import com.example.CollectionProject.domain.User;
-import com.example.CollectionProject.domain.dtos.RegisterUserRequest;
+import com.example.CollectionProject.domain.UpdateUserRequest;
+import com.example.CollectionProject.domain.entities.User;
+import com.example.CollectionProject.domain.RegisterUserRequest;
 import com.example.CollectionProject.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,5 +47,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllUser() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public Optional<User> getUserByEmail(String email) {
+        if(!email.isEmpty()){
+            return userRepository.findByEmail(email);
+        }
+        throw new RuntimeException();
+    }
+
+    @Override
+    public User updateUser(Long id, UpdateUserRequest updateUserRequest) {
+        Optional<User> existingUser = userRepository.findById(id);
+        if(existingUser.isPresent()){
+            User newUserInfo = existingUser.get();
+            newUserInfo.setName(updateUserRequest.getName());
+            newUserInfo.setUsername(updateUserRequest.getUsername());
+            newUserInfo.setEmail(updateUserRequest.getEmail());
+            newUserInfo.setPassword(updateUserRequest.getPassword());
+            return userRepository.save(newUserInfo);
+        }
+        throw new RuntimeException();
     }
 }
