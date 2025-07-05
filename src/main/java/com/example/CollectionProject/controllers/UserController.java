@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -65,5 +67,37 @@ public class UserController {
             @RequestParam("email") String email) {
         Optional<User> userByEmail = userService.getUserByEmail(email);
         return ResponseEntity.status(HttpStatus.OK).body(userByEmail);
+    }
+
+    @GetMapping("/emailDomain")
+    public ResponseEntity<Set<UserDto>> getUserByEmailDomain
+            (
+            @RequestParam("emailDomain") String domain) {
+        List<User> allUser = userService.getAllUser();
+        Set<UserDto> collect = allUser
+                .stream()
+                .filter(user -> user.getEmail().toLowerCase()
+                        .endsWith(domain.toLowerCase()))
+                .map(userMapper::toUser)
+                .collect(Collectors.toSet());
+        return ResponseEntity.status(HttpStatus.OK).body(collect);
+    }
+
+    @DeleteMapping("/{id}/user")
+    public ResponseEntity<Void> deleteUserById (@PathVariable Long id) {
+        userService.deleteUserById(id);
+       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/user-withGmail")
+    public ResponseEntity<List<UserDto>> getUserByEmailDomain() {
+        List<User> allUser = userService.getAllUser();
+        List<UserDto> collectAllUsers = allUser
+                .stream()
+                .filter(user -> user.getEmail().endsWith("@gmail.com"))
+                .map(userMapper::toUser)
+                .toList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(collectAllUsers);
     }
 }
