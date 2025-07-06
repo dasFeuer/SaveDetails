@@ -2,6 +2,7 @@ package com.example.CollectionProject.controllers;
 
 import com.example.CollectionProject.domain.UpdateUserRequest;
 import com.example.CollectionProject.domain.dtos.UpdateUserRequestDto;
+import com.example.CollectionProject.domain.dtosSummary.UserSummaryDto;
 import com.example.CollectionProject.domain.entities.User;
 import com.example.CollectionProject.domain.RegisterUserRequest;
 import com.example.CollectionProject.domain.dtos.RegisterUserRequestDto;
@@ -51,22 +52,27 @@ public class UserController {
     }
 
     @GetMapping("/all-users")
-    public ResponseEntity<List<UserDto>> getAllUsers() {
+    public ResponseEntity<List<UserSummaryDto>> getAllUsers() {
         List<User> allUser = userService.getAllUser();
-        List<UserDto> collectAllUsers = allUser
+        List<UserSummaryDto> collectAllUsers = allUser
                 .stream()
-                .map(userMapper::toUser)
+                .map(userMapper::toSummary)
                 .toList();
 
         return ResponseEntity.status(HttpStatus.OK).body(collectAllUsers);
     }
 
     @PostMapping("/email")
-    public ResponseEntity<Optional<User>> getUserByEmail
+    public ResponseEntity<UserDto> getUserByEmail
             (
             @RequestParam("email") String email) {
         Optional<User> userByEmail = userService.getUserByEmail(email);
-        return ResponseEntity.status(HttpStatus.OK).body(userByEmail);
+        if(userByEmail.isPresent()) {
+            UserDto userDto = userMapper.toUser(userByEmail.get());
+            return ResponseEntity.status(HttpStatus.OK).body(userDto);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
     }
 
     @GetMapping("/emailDomain")

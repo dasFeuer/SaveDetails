@@ -1,9 +1,10 @@
-package com.example.CollectionProject.services;
+package com.example.CollectionProject.services.impl;
 
 import com.example.CollectionProject.domain.UpdateUserRequest;
 import com.example.CollectionProject.domain.entities.User;
 import com.example.CollectionProject.domain.RegisterUserRequest;
 import com.example.CollectionProject.repositories.UserRepository;
+import com.example.CollectionProject.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
