@@ -2,16 +2,20 @@ package com.example.CollectionProject.services.impl;
 
 
 import com.example.CollectionProject.domain.CreateCredentialsRequest;
+import com.example.CollectionProject.domain.UpdateCredentialsRequest;
 import com.example.CollectionProject.domain.entities.SaveCredentials;
 import com.example.CollectionProject.domain.entities.User;
 import com.example.CollectionProject.repositories.SaveCredentialsRepository;
 import com.example.CollectionProject.services.SaveCredentialsService;
 import com.example.CollectionProject.services.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SaveCredentialsServiceImpl implements SaveCredentialsService {
@@ -36,6 +40,23 @@ public class SaveCredentialsServiceImpl implements SaveCredentialsService {
             saveCredentials.setOwnerOfCredentials(user.get());
 
             return saveCredentialsRepository.save(saveCredentials);
+        }
+        throw new RuntimeException();
+    }
+
+    @Override
+    @Transactional
+    public SaveCredentials updateTheUserCredentials(Long id, UpdateCredentialsRequest updateCredentialsRequest) {
+        Optional<SaveCredentials> credentials = saveCredentialsRepository.findById(id);
+        if(credentials.isPresent()) {
+            SaveCredentials updateCredentials = credentials.get();
+            updateCredentials.setHeader(updateCredentialsRequest.getHeader());
+            updateCredentials.setEmail(updateCredentialsRequest.getEmail());
+            updateCredentials.setUsername(updateCredentialsRequest.getUsername());
+            updateCredentials.setPassword(updateCredentialsRequest.getPassword());
+            updateCredentials.setRemarks(updateCredentialsRequest.getRemarks());
+            log.info("Updated from Service");
+            return saveCredentialsRepository.save(updateCredentials);
         }
         throw new RuntimeException();
     }
