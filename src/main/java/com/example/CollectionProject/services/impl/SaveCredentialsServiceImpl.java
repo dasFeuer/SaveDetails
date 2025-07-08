@@ -60,4 +60,9 @@ public class SaveCredentialsServiceImpl implements SaveCredentialsService {
         }
         throw new RuntimeException();
     }
+
+    @Override
+    public void deleteCredentialsById(Long id) {
+        saveCredentialsRepository.deleteById(id);
+    }
 }

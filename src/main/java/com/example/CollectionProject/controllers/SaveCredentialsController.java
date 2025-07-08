@@ -54,4 +54,10 @@ public class SaveCredentialsController {
         log.info("Updated from Controller");
         return ResponseEntity.status(HttpStatus.OK).body(updatedCredentials);
     }
+
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<Void> deleteCredentials(@PathVariable Long id) {
+        credentialsService.deleteCredentialsById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
