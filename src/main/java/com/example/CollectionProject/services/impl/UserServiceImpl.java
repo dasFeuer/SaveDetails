@@ -1,5 +1,7 @@
 package com.example.CollectionProject.services.impl;
 
+import com.example.CollectionProject.domain.AuthResponse;
+import com.example.CollectionProject.domain.LoginUserRequest;
 import com.example.CollectionProject.domain.UpdateUserRequest;
 import com.example.CollectionProject.domain.entities.User;
 import com.example.CollectionProject.domain.RegisterUserRequest;
@@ -8,6 +10,11 @@ import com.example.CollectionProject.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,6 +26,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Transactional
     @Override
@@ -40,7 +48,11 @@ public class UserServiceImpl implements UserService {
             newUser.setName(registerUserRequest.getName());
             newUser.setEmail(registerUserRequest.getEmail());
             newUser.setUsername(registerUserRequest.getUsername());
-            newUser.setPassword(registerUserRequest.getPassword());
+            newUser
+                    .setPassword
+                    (passwordEncoder
+                            .encode(registerUserRequest
+                                    .getPassword()));
             return userRepository.save(newUser);
         }
     }
@@ -66,7 +78,10 @@ public class UserServiceImpl implements UserService {
             newUserInfo.setName(updateUserRequest.getName());
             newUserInfo.setUsername(updateUserRequest.getUsername());
             newUserInfo.setEmail(updateUserRequest.getEmail());
-            newUserInfo.setPassword(updateUserRequest.getPassword());
+            newUserInfo
+                    .setPassword(passwordEncoder
+                    .encode(updateUserRequest
+                            .getPassword()));
             return userRepository.save(newUserInfo);
         }
         throw new RuntimeException();

@@ -1,5 +1,7 @@
 package com.example.CollectionProject.controllers;
 
+import com.example.CollectionProject.domain.AuthResponse;
+import com.example.CollectionProject.domain.LoginUserRequest;
 import com.example.CollectionProject.domain.UpdateUserRequest;
 import com.example.CollectionProject.domain.dtos.UpdateUserRequestDto;
 import com.example.CollectionProject.domain.dtosSummary.UserSummaryDto;
@@ -9,11 +11,15 @@ import com.example.CollectionProject.domain.dtos.RegisterUserRequestDto;
 import com.example.CollectionProject.domain.dtos.UserDto;
 import com.example.CollectionProject.mappers.UserMapper;
 import com.example.CollectionProject.services.UserService;
+import com.example.CollectionProject.services.impl.JwtService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +35,8 @@ public class UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+    private final AuthenticationManager authentication;
+    private final JwtService jwtService;
 
     @PostMapping("/registerUser")
     public ResponseEntity<UserDto> registerUser(
@@ -37,7 +45,22 @@ public class UserController {
         User newUser = userService.createUser(registerUserRequest);
         UserDto user = userMapper.toUser(newUser);
         return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
 
+    @PostMapping("/loginUser")
+    public ResponseEntity<AuthResponse> loginUser(
+            @Valid @RequestBody LoginUserRequest loginUserRequest) {
+        Authentication authenticate = authentication.authenticate(new UsernamePasswordAuthenticationToken(
+                loginUserRequest.getEmail(),
+                loginUserRequest.getPassword()
+        ));
+
+        String token = jwtService.generateToken(loginUserRequest.getEmail());
+        AuthResponse loginResponse = AuthResponse.builder()
+                .token(token)
+                .expiresIn(86400L)
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
     }
 
     @PutMapping("/{id}/updateUser")
