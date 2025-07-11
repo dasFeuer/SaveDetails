@@ -20,7 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +39,25 @@ public class UserController {
     private final UserMapper userMapper;
     private final AuthenticationManager authentication;
     private final JwtService jwtService;
+
+    private Optional<User> getAuthenticatedUser(){
+        Authentication authenticated = SecurityContextHolder.getContext().getAuthentication();
+        String email = authenticated.getName();
+        return userService.getUserByEmail(email);
+    }
+
+    private User getAuthenticatedUserOrThrow() {
+        return getAuthenticatedUser()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated"));
+    }
+
+    private void validateUserAccess(Long userId) {
+        User user = getAuthenticatedUserOrThrow();
+        if (!user.getId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+        }
+    }
+
 
     @PostMapping("/registerUser")
     public ResponseEntity<UserDto> registerUser(
@@ -64,10 +85,11 @@ public class UserController {
     }
 
     @PutMapping("/{id}/updateUser")
-    public ResponseEntity<UserDto> registerUser(
+    public ResponseEntity<UserDto> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserRequestDto updateUserRequestDto
             ) {
+        validateUserAccess(id);
         UpdateUserRequest update = userMapper.toUpdate(updateUserRequestDto);
         User user = userService.updateUser(id, update);
         UserDto updatedUser = userMapper.toUser(user);
