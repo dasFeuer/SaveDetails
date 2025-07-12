@@ -71,12 +71,12 @@ public class UserController {
     @PostMapping("/loginUser")
     public ResponseEntity<AuthResponse> loginUser(
             @Valid @RequestBody LoginUserRequest loginUserRequest) {
-        Authentication authenticate = authentication.authenticate(new UsernamePasswordAuthenticationToken(
+        Authentication authenticated = authentication.authenticate(new UsernamePasswordAuthenticationToken(
                 loginUserRequest.getEmail(),
                 loginUserRequest.getPassword()
         ));
 
-        String token = jwtService.generateToken(loginUserRequest.getEmail());
+        String token = jwtService.generateToken(authenticated.getName());
         AuthResponse loginResponse = AuthResponse.builder()
                 .token(token)
                 .expiresIn(86400L)
@@ -98,25 +98,25 @@ public class UserController {
 
     @GetMapping("/all-users")
     public ResponseEntity<List<UserSummaryDto>> getAllUsers() {
+        getAuthenticatedUserOrThrow();
         List<User> allUser = userService.getAllUser();
         List<UserSummaryDto> collectAllUsers = allUser
                 .stream()
                 .map(userMapper::toSummary)
                 .toList();
 
-        return ResponseEntity.status(HttpStatus.OK).body(collectAllUsers);
+        return ResponseEntity.ok(collectAllUsers);
     }
 
-    @PostMapping("/email")
+    @GetMapping("/email")
     public ResponseEntity<UserDto> getUserByEmail
             (
             @RequestParam("email") String email) {
+        getAuthenticatedUserOrThrow();
         Optional<User> userByEmail = userService.getUserByEmail(email);
-        if(userByEmail.isPresent()) {
-            UserDto userDto = userMapper.toUser(userByEmail.get());
-            return ResponseEntity.status(HttpStatus.OK).body(userDto);
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return userByEmail
+                .map(user -> ResponseEntity.ok(userMapper.toUser(user)))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 
     }
 
@@ -124,6 +124,7 @@ public class UserController {
     public ResponseEntity<Set<UserDto>> getUserByEmailDomain
             (
             @RequestParam("emailDomain") String domain) {
+        getAuthenticatedUserOrThrow();
         List<User> allUser = userService.getAllUser();
         Set<UserDto> collect = allUser
                 .stream()
@@ -136,12 +137,14 @@ public class UserController {
 
     @DeleteMapping("/{id}/user")
     public ResponseEntity<Void> deleteUserById (@PathVariable Long id) {
+        validateUserAccess(id);
         userService.deleteUserById(id);
        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/user-withGmail")
     public ResponseEntity<List<UserDto>> getUserByEmailDomain() {
+        getAuthenticatedUserOrThrow();
         List<User> allUser = userService.getAllUser();
         List<UserDto> collectAllUsers = allUser
                 .stream()

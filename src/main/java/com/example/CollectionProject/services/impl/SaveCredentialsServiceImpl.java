@@ -65,4 +65,9 @@ public class SaveCredentialsServiceImpl implements SaveCredentialsService {
     public void deleteCredentialsById(Long id) {
         saveCredentialsRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<SaveCredentials> getCredentialsById(Long credentialId) {
+        return saveCredentialsRepository.findById(credentialId);
+    }
 }
