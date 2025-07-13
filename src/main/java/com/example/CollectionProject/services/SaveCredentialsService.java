@@ -4,6 +4,7 @@ import com.example.CollectionProject.domain.CreateCredentialsRequest;
 import com.example.CollectionProject.domain.UpdateCredentialsRequest;
 import com.example.CollectionProject.domain.entities.SaveCredentials;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface SaveCredentialsService {
@@ -14,4 +15,7 @@ public interface SaveCredentialsService {
     void deleteCredentialsById(Long id);
 
     Optional<SaveCredentials> getCredentialsById(Long credentialId);
+
+    List<SaveCredentials> getAllCredentials();
+
 }

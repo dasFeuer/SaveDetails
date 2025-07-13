@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -69,5 +70,10 @@ public class SaveCredentialsServiceImpl implements SaveCredentialsService {
     @Override
     public Optional<SaveCredentials> getCredentialsById(Long credentialId) {
         return saveCredentialsRepository.findById(credentialId);
+    }
+
+    @Override
+    public List<SaveCredentials> getAllCredentials() {
+        return saveCredentialsRepository.findAll();
     }
 }

@@ -4,6 +4,7 @@ import com.example.CollectionProject.domain.CreateCredentialsRequest;
 import com.example.CollectionProject.domain.UpdateCredentialsRequest;
 import com.example.CollectionProject.domain.dtos.CreateCredentialsRequestDto;
 import com.example.CollectionProject.domain.dtos.UpdateCredentialsRequestDto;
+import com.example.CollectionProject.domain.dtosSummary.SaveCredentialsSummaryDto;
 import com.example.CollectionProject.domain.dtosSummary.UpdateCredentialsSummaryDto;
 import com.example.CollectionProject.domain.entities.SaveCredentials;
 import com.example.CollectionProject.domain.dtos.SaveCredentialsDto;
@@ -16,6 +17,8 @@ public interface SaveCredentialsMapper {
 
     @Mapping(target = "ownerOfCredentials", source = "ownerOfCredentials")
     SaveCredentialsDto toSaveCredentials(SaveCredentials saveCredentials);
+
+    SaveCredentialsSummaryDto toSaveCredentialsSummaryDto(SaveCredentials saveCredentials);
 
     CreateCredentialsRequest toCreateCredentials(CreateCredentialsRequestDto createCredentialsRequestDto);
 

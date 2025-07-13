@@ -14,7 +14,6 @@ public class SaveCredentialsSummaryDto {
     private String header;
     private String email;
     private String username;
-    private String password;
     private String remarks;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

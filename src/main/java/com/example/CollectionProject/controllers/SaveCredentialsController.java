@@ -5,6 +5,7 @@ import com.example.CollectionProject.domain.RegisterUserRequest;
 import com.example.CollectionProject.domain.UpdateCredentialsRequest;
 import com.example.CollectionProject.domain.UpdateUserRequest;
 import com.example.CollectionProject.domain.dtos.*;
+import com.example.CollectionProject.domain.dtosSummary.SaveCredentialsSummaryDto;
 import com.example.CollectionProject.domain.dtosSummary.UpdateCredentialsSummaryDto;
 import com.example.CollectionProject.domain.entities.SaveCredentials;
 import com.example.CollectionProject.domain.entities.User;
@@ -23,7 +24,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -85,5 +88,17 @@ public class SaveCredentialsController {
         validateUserCredentialsAccess(id);
         credentialsService.deleteCredentialsById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/all-Credentials")
+    public ResponseEntity<List<SaveCredentialsSummaryDto>> getAllCredentials() {
+        getAuthenticatedUserOrThrow();
+        List<SaveCredentials> allCredentials = credentialsService.getAllCredentials();
+        List<SaveCredentialsSummaryDto> collect = allCredentials
+                .stream()
+                .map(credentialsMapper::toSaveCredentialsSummaryDto)
+                .toList();
+
+        return ResponseEntity.ok(collect);
     }
 }
