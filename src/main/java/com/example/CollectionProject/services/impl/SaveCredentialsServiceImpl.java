@@ -5,6 +5,7 @@ import com.example.CollectionProject.domain.CreateCredentialsRequest;
 import com.example.CollectionProject.domain.UpdateCredentialsRequest;
 import com.example.CollectionProject.domain.entities.SaveCredentials;
 import com.example.CollectionProject.domain.entities.User;
+import com.example.CollectionProject.exceptions.CredentialsException;
 import com.example.CollectionProject.repositories.SaveCredentialsRepository;
 import com.example.CollectionProject.services.SaveCredentialsService;
 import com.example.CollectionProject.services.UserService;
@@ -42,7 +43,7 @@ public class SaveCredentialsServiceImpl implements SaveCredentialsService {
 
             return saveCredentialsRepository.save(saveCredentials);
         }
-        throw new RuntimeException();
+        throw new CredentialsException("Unknown error occurred");
     }
 
     @Override

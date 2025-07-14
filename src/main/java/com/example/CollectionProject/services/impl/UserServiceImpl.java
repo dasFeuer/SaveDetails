@@ -1,18 +1,14 @@
 package com.example.CollectionProject.services.impl;
 
-import com.example.CollectionProject.domain.AuthResponse;
-import com.example.CollectionProject.domain.LoginUserRequest;
 import com.example.CollectionProject.domain.UpdateUserRequest;
 import com.example.CollectionProject.domain.entities.User;
 import com.example.CollectionProject.domain.RegisterUserRequest;
+import com.example.CollectionProject.exceptions.UserNotFoundException;
 import com.example.CollectionProject.repositories.UserRepository;
 import com.example.CollectionProject.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -66,8 +62,9 @@ public class UserServiceImpl implements UserService {
     public Optional<User> getUserByEmail(String email) {
         if(!email.isEmpty()){
             return userRepository.findByEmail(email);
+        } else {
+            throw new UserNotFoundException("User not found with email: " + email);
         }
-        throw new RuntimeException();
     }
 
     @Override
