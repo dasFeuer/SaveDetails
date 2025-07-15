@@ -43,7 +43,7 @@ public class SaveCredentialsServiceImpl implements SaveCredentialsService {
 
             return saveCredentialsRepository.save(saveCredentials);
         }
-        throw new CredentialsException("Unknown error occurred");
+        throw new CredentialsException();
     }
 
     @Override

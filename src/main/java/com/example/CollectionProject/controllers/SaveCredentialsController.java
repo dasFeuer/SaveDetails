@@ -9,6 +9,7 @@ import com.example.CollectionProject.domain.dtosSummary.SaveCredentialsSummaryDt
 import com.example.CollectionProject.domain.dtosSummary.UpdateCredentialsSummaryDto;
 import com.example.CollectionProject.domain.entities.SaveCredentials;
 import com.example.CollectionProject.domain.entities.User;
+import com.example.CollectionProject.exceptions.CredentialsNotFoundException;
 import com.example.CollectionProject.mappers.SaveCredentialsMapper;
 import com.example.CollectionProject.mappers.UserMapper;
 import com.example.CollectionProject.services.SaveCredentialsService;
@@ -54,7 +55,7 @@ public class SaveCredentialsController {
     private void validateUserCredentialsAccess(Long credentialId) {
         User user = getAuthenticatedUserOrThrow();
         SaveCredentials credentials = credentialsService.getCredentialsById(credentialId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Credentials not found"));
+                .orElseThrow(CredentialsNotFoundException::new);
         if (!credentials.getOwnerOfCredentials().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         }
@@ -100,5 +101,17 @@ public class SaveCredentialsController {
                 .toList();
 
         return ResponseEntity.ok(collect);
+    }
+    
+    @GetMapping("/{id}/credentials")
+    public ResponseEntity<SaveCredentialsSummaryDto> getById(@PathVariable Long id) {
+        validateUserCredentialsAccess(id);
+        Optional<SaveCredentials> credentialsById = credentialsService.getCredentialsById(id);
+        if(credentialsById.isPresent()){
+            SaveCredentialsSummaryDto saveCredentialsSummaryDto = credentialsMapper
+                    .toSaveCredentialsSummaryDto(credentialsById.get());
+            return ResponseEntity.ok(saveCredentialsSummaryDto);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
