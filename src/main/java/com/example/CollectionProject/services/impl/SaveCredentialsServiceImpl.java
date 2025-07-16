@@ -6,6 +6,7 @@ import com.example.CollectionProject.domain.UpdateCredentialsRequest;
 import com.example.CollectionProject.domain.entities.SaveCredentials;
 import com.example.CollectionProject.domain.entities.User;
 import com.example.CollectionProject.exceptions.CredentialsException;
+import com.example.CollectionProject.exceptions.CredentialsUpdateException;
 import com.example.CollectionProject.repositories.SaveCredentialsRepository;
 import com.example.CollectionProject.services.SaveCredentialsService;
 import com.example.CollectionProject.services.UserService;
@@ -60,7 +61,7 @@ public class SaveCredentialsServiceImpl implements SaveCredentialsService {
             log.info("Updated from Service");
             return saveCredentialsRepository.save(updateCredentials);
         }
-        throw new RuntimeException();
+        throw new CredentialsUpdateException("Credentials ID cannot be null");
     }
 
     @Override

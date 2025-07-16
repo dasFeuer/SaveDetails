@@ -2,7 +2,9 @@ package com.example.CollectionProject.controllers;
 
 import com.example.CollectionProject.domain.dtos.ErrorDto;
 import com.example.CollectionProject.exceptions.CredentialsNotFoundException;
+import com.example.CollectionProject.exceptions.CredentialsUpdateException;
 import com.example.CollectionProject.exceptions.UserNotFoundException;
+import com.example.CollectionProject.exceptions.UserUpdateException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,22 @@ import java.util.List;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(CredentialsUpdateException.class)
+    public ResponseEntity<ErrorDto> handleUpdateCredentialsException(CredentialsUpdateException ex) {
+        log.error("Caught CredentialsUpdateException", ex);
+        ErrorDto errorDto = new ErrorDto();
+        errorDto.setError("Unable to update credentials");
+        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserUpdateException.class)
+    public ResponseEntity<ErrorDto> handleUserUpdateException(UserUpdateException ex) {
+        log.error("Caught UserUpdateException", ex);
+        ErrorDto errorDto = new ErrorDto();
+        errorDto.setError("Unable to update user");
+        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorDto> handleUserNotFoundException(UserNotFoundException ex) {

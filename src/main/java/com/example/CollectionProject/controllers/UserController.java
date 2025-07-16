@@ -13,6 +13,7 @@ import com.example.CollectionProject.mappers.UserMapper;
 import com.example.CollectionProject.services.UserService;
 import com.example.CollectionProject.services.impl.JwtService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 @RequestMapping("/users")
 public class UserController {
 
@@ -110,15 +113,26 @@ public class UserController {
 
     @GetMapping("/email")
     public ResponseEntity<UserDto> getUserByEmail
-            (
-            @RequestParam("email") String email) {
+            (@RequestParam("email") String email) {
         getAuthenticatedUserOrThrow();
-        Optional<User> userByEmail = userService.getUserByEmail(email);
-        return userByEmail
-                .map(user -> ResponseEntity.ok(userMapper.toUser(user)))
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-
+        try {
+            Optional<User> userByEmail = userService.getUserByEmail(email);
+            return userByEmail
+                    .map(user -> ResponseEntity.ok(userMapper.toUser(user)))
+                    .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
+
+    @GetMapping("/{id}/user")
+    public ResponseEntity<UserDto> getUserById
+            (@PathVariable @Min(1) Long id) {
+        getAuthenticatedUserOrThrow();
+        User userById = userService.getUserById(id);
+        return ResponseEntity.ok(userMapper.toUser(userById));
+    }
+
 
     @GetMapping("/emailDomain")
     public ResponseEntity<Set<UserDto>> getUserByEmailDomain

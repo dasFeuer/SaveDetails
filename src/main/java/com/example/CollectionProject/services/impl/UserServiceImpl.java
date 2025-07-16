@@ -4,11 +4,13 @@ import com.example.CollectionProject.domain.UpdateUserRequest;
 import com.example.CollectionProject.domain.entities.User;
 import com.example.CollectionProject.domain.RegisterUserRequest;
 import com.example.CollectionProject.exceptions.UserNotFoundException;
+import com.example.CollectionProject.exceptions.UserUpdateException;
 import com.example.CollectionProject.repositories.UserRepository;
 import com.example.CollectionProject.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -60,12 +62,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> getUserByEmail(String email) {
-        if(!email.isEmpty()){
-            return userRepository.findByEmail(email);
-        } else {
-            throw new UserNotFoundException("User not found with email: " + email);
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email must not be empty");
         }
+        return userRepository.findByEmail(email);
     }
+
 
     @Override
     public User updateUser(Long id, UpdateUserRequest updateUserRequest) {
@@ -81,13 +83,22 @@ public class UserServiceImpl implements UserService {
                             .getPassword()));
             return userRepository.save(newUserInfo);
         }
-        throw new RuntimeException();
+        throw new UserUpdateException("User ID cannot be null");
     }
 
     @Override
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
 
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("Id must not be empty");
+        }
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id " + id));
     }
 
 }
